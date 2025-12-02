@@ -353,7 +353,7 @@ export default function Home() {
                 { src: "/sponsors/anduril.png", alt: "Anduril", width: 140, height: 35 },
                 { src: "/sponsors/zipline.png", alt: "Zipline", width: 110, height: 35 },
                 { src: "/sponsors/wing.png", alt: "Wing", width: 100, height: 40 },
-                { src: "/sponsors/boostvc.png", alt: "Boost VC", width: 120, height: 35 },
+                { src: "/sponsors/boostVC.png", alt: "Boost VC", width: 120, height: 35 },
                 { src: "/sponsors/src.png", alt: "Stanford Robotics Center", width: 100, height: 50 },
               ].map((sponsor) => (
                 <div key={sponsor.alt} className="opacity-60 hover:opacity-100 transition-opacity duration-300 flex-shrink-0">
