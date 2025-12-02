@@ -1,6 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
+
+const MotionImage = motion.create(Image);
 
 export default function Home() {
   const staticLayers = [1, 2, 3, 4];
@@ -16,12 +19,16 @@ export default function Home() {
       <section className="relative w-full h-screen overflow-hidden bg-white">
       {/* Static background layers */}
       {staticLayers.map((layerNum) => (
-        <img
+        <Image
           key={layerNum}
           src={`/layers/Julia_Dreams_Sketchbook_2_[Large]-${layerNum}.png`}
           alt={`Layer ${layerNum}`}
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          priority={layerNum <= 2}
+          className="object-cover"
           style={{ zIndex: layerNum, mixBlendMode: "multiply" }}
+          sizes="100vw"
+          quality={75}
         />
       ))}
 
@@ -32,13 +39,13 @@ export default function Home() {
           className={`absolute inset-0 overflow-hidden float-${index + 1}`}
           style={{ zIndex: num, mixBlendMode: "multiply" }}
         >
-          <motion.img
+          <MotionImage
             src={`/layers/Julia_Dreams_Sketchbook_2_[Large]-${num}.png`}
             alt={`Layer ${num}`}
-            className="w-full h-full object-contain"
-            style={{
-              willChange: "transform",
-            }}
+            fill
+            className="object-contain"
+            sizes="100vw"
+            quality={75}
             initial={{ x, y, opacity: 0 }}
             animate={{ x: 0, y: 0, opacity: 1 }}
             transition={{
@@ -52,7 +59,7 @@ export default function Home() {
 
       {/* Navbar */}
       <motion.nav
-        className="absolute top-6 left-6 right-6 z-30"
+        className="fixed top-6 left-6 right-6 z-50"
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
@@ -61,7 +68,7 @@ export default function Home() {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <a href="/" className="flex items-center gap-3 group">
-              <img src="/logo.png" alt="Horizons" className="w-10 h-10" />
+              <Image src="/logo.png" alt="Horizons" width={40} height={40} />
               <span className="text-2xl font-bold text-white font-[family-name:var(--font-space-grotesk)] tracking-tight">
                 HORIZONS
               </span>
@@ -100,8 +107,8 @@ export default function Home() {
           Stanford Robotics
         </p>
         <div className="flex items-center gap-6 mt-4">
-          <img src="/logo.png" alt="Horizons" className="w-24 h-24" />
-          <h1 className="text-8xl font-bold tracking-tight bg-gradient-to-r from-white via-red-200 to-white bg-clip-text text-transparent drop-shadow-2xl">
+          <Image src="/logo.png" alt="Horizons" width={96} height={96} />
+          <h1 className="text-8xl font-bold tracking-tight bg-[linear-gradient(to_right,white_0%,white_20%,#fecaca_35%,#fecaca_45%,white_60%,white_100%)] bg-clip-text text-transparent drop-shadow-2xl">
             HORIZONS
           </h1>
         </div>
