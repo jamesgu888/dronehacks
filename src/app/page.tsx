@@ -127,7 +127,7 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="relative py-16 pb-24 bg-gradient-to-b from-[#240b4d] via-[#6b2d5c] via-60% to-[#e2732e] overflow-hidden">
+      <section id="about" className="relative py-16 pb-24 bg-gradient-to-b from-[#240b4d] via-[#6b2d5c] via-60% to-[#e2732e] overflow-hidden scroll-mt-12">
         {/* Giant background year */}
         <div className="absolute top-0 left-0 right-0 flex justify-center pointer-events-none overflow-hidden">
           <span className="text-[20rem] md:text-[35rem] font-black text-white/[0.03] leading-none select-none font-[family-name:var(--font-space-grotesk)]">
@@ -163,12 +163,12 @@ export default function Home() {
             >
               {[...Array(2)].map((_, i) => (
                 <div key={i} className="flex gap-16">
-                  <span className="text-6xl md:text-8xl font-black text-white/90">200+ STUDENTS</span>
-                  <span className="text-6xl md:text-8xl font-black text-white/20">✦</span>
-                  <span className="text-6xl md:text-8xl font-black text-white/90">48 HOURS</span>
-                  <span className="text-6xl md:text-8xl font-black text-white/20">✦</span>
-                  <span className="text-6xl md:text-8xl font-black text-white/90">$20K+ PRIZES</span>
-                  <span className="text-6xl md:text-8xl font-black text-white/20">✦</span>
+                  <span className="text-4xl md:text-6xl font-black text-white/90">200+ STUDENTS</span>
+                  <span className="text-4xl md:text-6xl font-black text-white/20">✦</span>
+                  <span className="text-4xl md:text-6xl font-black text-white/90">48 HOURS</span>
+                  <span className="text-4xl md:text-6xl font-black text-white/20">✦</span>
+                  <span className="text-4xl md:text-6xl font-black text-white/90">$20K+ PRIZES</span>
+                  <span className="text-4xl md:text-6xl font-black text-white/20">✦</span>
                 </div>
               ))}
             </motion.div>
@@ -227,7 +227,7 @@ export default function Home() {
           </div>
 
           {/* Eligibility Section */}
-          <div id="eligibility" className="pt-16">
+          <div id="eligibility" className="pt-16 scroll-mt-12">
           {/* Header */}
           <motion.div
             className="px-6 md:px-20 mb-8"
@@ -321,7 +321,7 @@ export default function Home() {
       </section>
 
       {/* Sponsors Section */}
-      <section id="sponsors" className="relative py-20 bg-[#0a0a0a] overflow-hidden">
+      <section id="sponsors" className="relative py-20 bg-[#0a0a0a] overflow-hidden scroll-mt-12">
         <div className="font-[family-name:var(--font-space-grotesk)]">
           {/* Header */}
           <motion.div
