@@ -1,11 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import InterestModal from "@/components/InterestModal";
 
 const MotionImage = motion.create(Image);
 
 export default function Home() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const staticLayers = [1, 2, 3, 4];
   const animatedLayers = [
     { num: 6, x: -200, y: -200 }, // top-left
@@ -67,29 +71,47 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-3 group">
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex items-center gap-3 group cursor-pointer">
               <Image src="/logo.png" alt="Horizons" width={40} height={40} />
               <span className="text-2xl font-bold text-white font-[family-name:var(--font-space-grotesk)] tracking-tight">
                 HORIZONS
               </span>
             </button>
 
+            {/* Mobile Register Now Button */}
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="md:hidden px-3 py-1.5 bg-white text-black rounded-lg uppercase tracking-wider text-sm font-semibold hover:bg-white/90 transition-all font-[family-name:var(--font-space-grotesk)] cursor-pointer"
+            >
+              Register Now
+            </button>
+
             {/* Nav Links */}
             <div className="hidden md:flex items-center gap-8 font-[family-name:var(--font-space-grotesk)]">
-              <button onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })} className="px-2 py-2 text-white/70 hover:text-white transition-all uppercase tracking-widest text-lg font-semibold hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]">
+              <button onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })} className="px-2 py-2 text-white/70 hover:text-white transition-all uppercase tracking-widest text-lg font-semibold hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.6)] cursor-pointer">
                 About
               </button>
-              <button onClick={() => document.getElementById('eligibility')?.scrollIntoView({ behavior: 'smooth' })} className="px-2 py-2 text-white/70 hover:text-white transition-all uppercase tracking-widest text-lg font-semibold hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]">
+              <button onClick={() => document.getElementById('eligibility')?.scrollIntoView({ behavior: 'smooth' })} className="px-2 py-2 text-white/70 hover:text-white transition-all uppercase tracking-widest text-lg font-semibold hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.6)] cursor-pointer">
                 Eligibility
               </button>
-              <button onClick={() => document.getElementById('sponsors')?.scrollIntoView({ behavior: 'smooth' })} className="px-2 py-2 text-white/70 hover:text-white transition-all uppercase tracking-widest text-lg font-semibold hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.6)]">
+              <button onClick={() => document.getElementById('sponsors')?.scrollIntoView({ behavior: 'smooth' })} className="px-2 py-2 text-white/70 hover:text-white transition-all uppercase tracking-widest text-lg font-semibold hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.6)] cursor-pointer">
                 Sponsors
+              </button>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="px-4 py-2 bg-white text-black rounded-lg uppercase tracking-widest text-lg font-semibold hover:bg-white/90 transition-all cursor-pointer"
+              >
+                Register Now
               </button>
             </div>
           </div>
         </div>
       </motion.nav>
 
+      {/* Interest Modal */}
+      <InterestModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+      
       {/* Content overlay */}
       <motion.div
         className="absolute inset-0 flex flex-col items-center justify-center z-20 text-white font-[family-name:var(--font-space-grotesk)]"
@@ -102,7 +124,7 @@ export default function Home() {
         </p>
         <div className="flex flex-col md:flex-row items-center gap-2 md:gap-6 mt-4">
           <Image src="/logo.png" alt="Horizons" width={96} height={96} className="w-16 h-16 md:w-24 md:h-24" />
-          <h1 className="text-5xl md:text-8xl font-bold tracking-tight bg-[linear-gradient(to_right,white_0%,white_20%,#fecaca_35%,#fecaca_45%,white_60%,white_100%)] bg-clip-text text-transparent drop-shadow-2xl">
+          <h1 className="text-5xl md:text-8xl font-bold tracking-tight text-white drop-shadow-2xl">
             HORIZONS
           </h1>
         </div>
@@ -115,6 +137,12 @@ export default function Home() {
             DroneHacks
           </p>
         </div>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="mt-8 px-8 py-3 bg-white text-black rounded-full uppercase tracking-widest text-lg font-bold hover:bg-white/90 transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] cursor-pointer"
+        >
+          Register Now
+        </button>
       </motion.div>
 
       {/* Bottom gradient fade overlay */}
@@ -156,13 +184,9 @@ export default function Home() {
 
           {/* Scrolling stats ticker */}
           <div className="relative py-6 mb-12 overflow-hidden border-y border-white/10">
-            <motion.div
-              className="flex gap-16 whitespace-nowrap"
-              animate={{ x: ["0%", "-50%"] }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            >
+            <div className="flex gap-6 md:gap-16 whitespace-nowrap animate-ticker">
               {[...Array(2)].map((_, i) => (
-                <div key={i} className="flex gap-16">
+                <div key={i} className="flex gap-6 md:gap-16">
                   <span className="text-4xl md:text-6xl font-black text-white/90">200+ STUDENTS</span>
                   <span className="text-4xl md:text-6xl font-black text-white/20">✦</span>
                   <span className="text-4xl md:text-6xl font-black text-white/90">48 HOURS</span>
@@ -171,7 +195,7 @@ export default function Home() {
                   <span className="text-4xl md:text-6xl font-black text-white/20">✦</span>
                 </div>
               ))}
-            </motion.div>
+            </div>
           </div>
 
           {/* Main content - asymmetric layout */}
@@ -286,9 +310,9 @@ export default function Home() {
                 <div className="space-y-0">
                   {[
                     { date: "JAN 10", label: "Applications Open", active: true },
-                    { date: "FEB 1", label: "Early Accept Round", active: false },
-                    { date: "MAR 1", label: "Regular Acceptance", active: false },
-                    { date: "MAR 25", label: "Final Wave", active: false },
+                    { date: "FEB 5", label: "Early Accept Round", active: false },
+                    { date: "MAR 14", label: "Regular Acceptance", active: false },
+                    { date: "MAR 25", label: "Last Day to Reserve Spot", active: false },
                     { date: "MAY 15-17", label: "Event @ Stanford University", active: false, highlight: true },
                   ].map((item, index) => (
                     <motion.div
@@ -339,15 +363,30 @@ export default function Home() {
 
           {/* Logo grid */}
           <div className="max-w-5xl mx-auto px-6">
-            {/* Rothberg - full width on mobile/tablet, inline on desktop */}
-            <div className="flex justify-center mb-10 lg:hidden">
-              <span className="text-white text-2xl font-bold tracking-wide whitespace-nowrap opacity-60">Rothberg Catalyzer</span>
-            </div>
+            {/* Rothberg - on its own line above other sponsors */}
+            <motion.div
+              className="flex justify-center mb-10"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+            >
+              <span className="text-white text-4xl md:text-5xl lg:text-7xl font-bold tracking-wide whitespace-nowrap opacity-60 hover:opacity-100 transition-opacity duration-300">Rothberg Catalyzer</span>
+            </motion.div>
 
+            {/* More coming soon */}
+            <motion.p
+              className="text-center text-white/30 text-lg md:text-xl italic"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+            >
+              more coming soon...
+            </motion.p>
+
+            {/* Other sponsors - hidden for now
             <div className="flex flex-wrap lg:flex-nowrap justify-center items-center gap-10 md:gap-12 lg:gap-16">
-              <div className="hidden lg:flex items-center justify-center">
-                <span className="text-white text-xl font-bold tracking-wide whitespace-nowrap opacity-60 hover:opacity-100 transition-opacity duration-300">Rothberg Catalyzer</span>
-              </div>
               {[
                 { src: "/sponsors/skydio.png", alt: "Skydio", width: 120, height: 40 },
                 { src: "/sponsors/anduril.png", alt: "Anduril", width: 140, height: 35 },
@@ -367,6 +406,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
+            */}
           </div>
 
           {/* Interested in sponsoring */}
