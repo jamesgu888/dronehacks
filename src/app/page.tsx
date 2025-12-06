@@ -417,7 +417,7 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            Interested in sponsoring? <a href="mailto:artash@stanford.edu" className="text-white/60 hover:text-white underline underline-offset-4 transition-colors">Get in touch</a>
+            Interested in sponsoring? <a href="mailto:inquiries@stanfordhorizons.com" className="text-white/60 hover:text-white underline underline-offset-4 transition-colors">inquiries@stanfordhorizons.com</a>
           </motion.p>
         </div>
       </section>

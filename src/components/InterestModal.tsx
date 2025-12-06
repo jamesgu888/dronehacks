@@ -1,9 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { db } from "@/lib/firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+
+declare global {
+  interface Window {
+    capycap?: {
+      render: (container?: HTMLElement) => void;
+      reset: (container?: HTMLElement) => void;
+      getToken: (container?: HTMLElement) => string | null;
+    };
+  }
+}
 
 interface InterestModalProps {
   isOpen: boolean;
@@ -14,16 +24,66 @@ export default function InterestModal({ isOpen, onClose }: InterestModalProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const captchaRef = useRef<HTMLDivElement>(null);
+
+  // Load CapyCap script
+  useEffect(() => {
+    const existingScript = document.querySelector('script[src="https://capycap.ai/widget.js"]');
+
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.src = "https://capycap.ai/widget.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  // Render captcha when modal opens
+  useEffect(() => {
+    if (isOpen && captchaRef.current) {
+      // Wait for script to load and render
+      const timer = setTimeout(() => {
+        if (window.capycap?.render) {
+          window.capycap.render(captchaRef.current!);
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email) return;
 
+    // Get captcha token from hidden input
+    const tokenInput = captchaRef.current?.querySelector('input[name="capycap-token"]') as HTMLInputElement | null;
+    const token = tokenInput?.value || window.capycap?.getToken();
+    if (!token) {
+      setStatus("error");
+      setErrorMessage("Please complete the captcha.");
+      return;
+    }
+
     setStatus("loading");
     setErrorMessage("");
 
     try {
+      // Verify captcha
+      const verifyRes = await fetch("/api/verify-captcha", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+      const { success } = await verifyRes.json();
+
+      if (!success) {
+        setStatus("error");
+        setErrorMessage("Captcha verification failed. Please try again.");
+        window.capycap?.reset(captchaRef.current || undefined);
+        return;
+      }
+
       // Use email as document ID to prevent duplicates (no read permission needed)
       const emailDocRef = doc(db, "interest_emails", email);
       await setDoc(emailDocRef, {
@@ -33,11 +93,13 @@ export default function InterestModal({ isOpen, onClose }: InterestModalProps) {
 
       setEmail("");
       setStatus("idle");
+      window.capycap?.reset(captchaRef.current || undefined);
       onClose();
     } catch (error) {
       console.error("Error adding email:", error);
       setStatus("error");
       setErrorMessage("Something went wrong. Please try again.");
+      window.capycap?.reset(captchaRef.current || undefined);
     }
   };
 
@@ -92,6 +154,12 @@ export default function InterestModal({ isOpen, onClose }: InterestModalProps) {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/40 transition-colors"
+                />
+
+                <div
+                  ref={captchaRef}
+                  className="capycap-captcha"
+                  data-sitekey={process.env.NEXT_PUBLIC_CAPYCAP_SITEKEY}
                 />
 
                 <button
