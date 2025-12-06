@@ -1,5 +1,6 @@
-import { initializeApp, getApps } from "firebase/app";
+import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAnalytics, isSupported, logEvent as firebaseLogEvent, type Analytics } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -12,7 +13,33 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase only if it hasn't been initialized
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const app: FirebaseApp = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 const db = getFirestore(app);
 
-export { db };
+// Analytics - cached promise pattern (recommended by Firebase for Next.js)
+// See: https://stackoverflow.com/questions/66812479
+let analyticsPromise: Promise<Analytics | null> | null = null;
+
+const getAnalyticsInstance = (): Promise<Analytics | null> => {
+  if (typeof window === "undefined") {
+    return Promise.resolve(null);
+  }
+
+  if (!analyticsPromise) {
+    analyticsPromise = isSupported().then((supported) =>
+      supported ? getAnalytics(app) : null
+    );
+  }
+
+  return analyticsPromise;
+};
+
+// Helper function to log custom events
+const logEvent = async (eventName: string, eventParams?: Record<string, unknown>) => {
+  const analytics = await getAnalyticsInstance();
+  if (analytics) {
+    firebaseLogEvent(analytics, eventName, eventParams);
+  }
+};
+
+export { db, getAnalyticsInstance, logEvent };
