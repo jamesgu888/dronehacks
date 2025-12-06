@@ -11,6 +11,7 @@ declare global {
     capycap?: {
       render: (container?: HTMLElement) => void;
       reset: (container?: HTMLElement) => void;
+      getToken: (container?: HTMLElement) => string | null;
     };
   }
 }
