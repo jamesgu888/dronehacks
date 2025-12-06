@@ -1,12 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
+import InterestModal from "@/components/InterestModal";
 
 const MotionImage = motion.create(Image);
 
 export default function Home() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const staticLayers = [1, 2, 3, 4];
   const animatedLayers = [
@@ -77,12 +79,12 @@ export default function Home() {
             </button>
 
             {/* Mobile Register Now Button */}
-            <Link
-              href="/register"
-              className="md:hidden px-3 py-1.5 bg-white text-black rounded-lg uppercase tracking-wider text-sm font-semibold hover:bg-white/90 transition-all font-[family-name:var(--font-space-grotesk)]"
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="md:hidden px-3 py-1.5 bg-white text-black rounded-lg uppercase tracking-wider text-sm font-semibold hover:bg-white/90 transition-all font-[family-name:var(--font-space-grotesk)] cursor-pointer"
             >
               Register Now
-            </Link>
+            </button>
 
             {/* Nav Links */}
             <div className="hidden md:flex items-center gap-8 font-[family-name:var(--font-space-grotesk)]">
@@ -95,12 +97,12 @@ export default function Home() {
               <button onClick={() => document.getElementById('sponsors')?.scrollIntoView({ behavior: 'smooth' })} className="px-2 py-2 text-white/70 hover:text-white transition-all uppercase tracking-widest text-lg font-semibold hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.6)] cursor-pointer">
                 Sponsors
               </button>
-              <Link
-                href="/register"
-                className="px-4 py-2 bg-white text-black rounded-lg uppercase tracking-widest text-lg font-semibold hover:bg-white/90 transition-all"
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="px-4 py-2 bg-white text-black rounded-lg uppercase tracking-widest text-lg font-semibold hover:bg-white/90 transition-all cursor-pointer"
               >
                 Register Now
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -131,12 +133,12 @@ export default function Home() {
             DroneHacks
           </p>
         </div>
-        <Link
-          href="/register"
-          className="mt-8 px-8 py-3 bg-white text-black rounded-full uppercase tracking-widest text-lg font-bold hover:bg-white/90 transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="mt-8 px-8 py-3 bg-white text-black rounded-full uppercase tracking-widest text-lg font-bold hover:bg-white/90 transition-all shadow-[0_0_30px_rgba(255,255,255,0.3)] cursor-pointer"
         >
           Register Now
-        </Link>
+        </button>
       </motion.div>
 
       {/* Bottom gradient fade overlay */}
@@ -415,6 +417,9 @@ export default function Home() {
           </motion.p>
         </div>
       </section>
+
+      {/* Interest Modal */}
+      <InterestModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 }
