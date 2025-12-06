@@ -28,11 +28,11 @@ export default function InterestModal({ isOpen, onClose }: InterestModalProps) {
 
   // Load CapyCap script
   useEffect(() => {
-    const existingScript = document.querySelector('script[src="https://capycap.ai/widget.js"]');
+    const existingScript = document.querySelector('script[src^="https://capycap.ai/widget.js"]');
 
     if (!existingScript) {
       const script = document.createElement("script");
-      script.src = "https://capycap.ai/widget.js";
+      script.src = "https://capycap.ai/widget.js?v=2";
       script.async = true;
       document.body.appendChild(script);
     }
@@ -47,7 +47,30 @@ export default function InterestModal({ isOpen, onClose }: InterestModalProps) {
           window.capycap.render(captchaRef.current!);
         }
       }, 100);
-      return () => clearTimeout(timer);
+
+      // Debug: Listen for captcha resize messages
+      const handleMessage = (event: MessageEvent) => {
+        if (event.data?.type === 'capycap-resize' && event.data.expanded) {
+          const viewportWidth = window.innerWidth;
+          const isMobile = viewportWidth < 600;
+          console.log('[dronehacks] viewport:', viewportWidth, 'x', window.innerHeight, '| mobile:', isMobile, '| requested size:', event.data.width, 'x', event.data.height);
+
+          // Check actual iframe size after widget.js should have resized it
+          setTimeout(() => {
+            const iframe = captchaRef.current?.querySelector('iframe');
+            if (iframe) {
+              console.log('[dronehacks] ACTUAL iframe size:', iframe.offsetWidth, 'x', iframe.offsetHeight);
+              console.log('[dronehacks] iframe style:', iframe.style.cssText);
+            }
+          }, 100);
+        }
+      };
+      window.addEventListener('message', handleMessage);
+
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('message', handleMessage);
+      };
     }
   }, [isOpen]);
 
@@ -118,7 +141,7 @@ export default function InterestModal({ isOpen, onClose }: InterestModalProps) {
 
           {/* Modal */}
           <motion.div
-            className="fixed inset-0 z-[101] flex items-center justify-center p-4"
+            className="fixed inset-0 z-[101] flex items-start md:items-center justify-center p-4 pt-8 md:pt-4 overflow-y-auto"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
