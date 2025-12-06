@@ -108,6 +108,14 @@ export default function RegisterPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const captchaRef = useRef<HTMLDivElement>(null);
 
+  // Set body background to match page (prevents white flash when captcha expands)
+  useEffect(() => {
+    document.body.style.backgroundColor = '#e2732e';
+    return () => {
+      document.body.style.backgroundColor = '';
+    };
+  }, []);
+
   // Load CapyCap script
   useEffect(() => {
     if (document.querySelector('script[src="https://capycap.ai/widget.js"]')) return;
@@ -204,8 +212,8 @@ export default function RegisterPage() {
   ];
 
   return (
-    <div className="min-h-screen text-white bg-[#e2732e] font-[family-name:var(--font-space-grotesk)] overflow-x-hidden">
-      <div className="min-h-screen bg-gradient-to-b from-[#240b4d] via-[#6b2d5c] via-60% to-transparent pb-20">
+    <div className="text-white font-[family-name:var(--font-space-grotesk)] min-h-screen bg-gradient-to-b from-[#240b4d] via-[#6b2d5c] via-60% to-[#e2732e]">
+      <div className="pb-20">
 
       {/* Back to home link - frosted glass */}
       <motion.div
