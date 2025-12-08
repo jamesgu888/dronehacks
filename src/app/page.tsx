@@ -108,10 +108,6 @@ export default function Home() {
         </div>
       </motion.nav>
 
-      {/* Interest Modal */}
-      <InterestModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-
-      
       {/* Content overlay */}
       <motion.div
         className="absolute inset-0 flex flex-col items-center justify-center z-20 text-white font-[family-name:var(--font-space-grotesk)]"
@@ -421,6 +417,9 @@ export default function Home() {
           </motion.p>
         </div>
       </section>
+
+      {/* Interest Modal */}
+      <InterestModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 }

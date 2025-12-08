@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { db } from "@/lib/firebase";
+import { db, logEvent } from "@/lib/firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 interface InterestModalProps {
@@ -30,6 +30,11 @@ export default function InterestModal({ isOpen, onClose }: InterestModalProps) {
         email,
         createdAt: serverTimestamp(),
       }, { merge: true });
+
+      // Track successful signup
+      logEvent("sign_up", {
+        method: "email_interest",
+      });
 
       setEmail("");
       setStatus("idle");
