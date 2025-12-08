@@ -1,19 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { db } from "@/lib/firebase";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-
-declare global {
-  interface Window {
-    capycap?: {
-      render: (container?: HTMLElement) => void;
-      reset: (container?: HTMLElement) => void;
-      getToken: (container?: HTMLElement) => string | null;
-    };
-  }
-}
 
 interface InterestModalProps {
   isOpen: boolean;
@@ -24,89 +14,16 @@ export default function InterestModal({ isOpen, onClose }: InterestModalProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
-  const captchaRef = useRef<HTMLDivElement>(null);
-
-  // Load CapyCap script
-  useEffect(() => {
-    const existingScript = document.querySelector('script[src^="https://capycap.ai/widget.js"]');
-
-    if (!existingScript) {
-      const script = document.createElement("script");
-      script.src = "https://capycap.ai/widget.js?v=2";
-      script.async = true;
-      document.body.appendChild(script);
-    }
-  }, []);
-
-  // Render captcha when modal opens
-  useEffect(() => {
-    if (isOpen && captchaRef.current) {
-      // Wait for script to load and render
-      const timer = setTimeout(() => {
-        if (window.capycap?.render) {
-          window.capycap.render(captchaRef.current!);
-        }
-      }, 100);
-
-      // Debug: Listen for captcha resize messages
-      const handleMessage = (event: MessageEvent) => {
-        if (event.data?.type === 'capycap-resize' && event.data.expanded) {
-          const viewportWidth = window.innerWidth;
-          const isMobile = viewportWidth < 600;
-          console.log('[dronehacks] viewport:', viewportWidth, 'x', window.innerHeight, '| mobile:', isMobile, '| requested size:', event.data.width, 'x', event.data.height);
-
-          // Check actual iframe size after widget.js should have resized it
-          setTimeout(() => {
-            const iframe = captchaRef.current?.querySelector('iframe');
-            if (iframe) {
-              console.log('[dronehacks] ACTUAL iframe size:', iframe.offsetWidth, 'x', iframe.offsetHeight);
-              console.log('[dronehacks] iframe style:', iframe.style.cssText);
-            }
-          }, 100);
-        }
-      };
-      window.addEventListener('message', handleMessage);
-
-      return () => {
-        clearTimeout(timer);
-        window.removeEventListener('message', handleMessage);
-      };
-    }
-  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email) return;
 
-    // Get captcha token from hidden input
-    const tokenInput = captchaRef.current?.querySelector('input[name="capycap-token"]') as HTMLInputElement | null;
-    const token = tokenInput?.value || window.capycap?.getToken();
-    if (!token) {
-      setStatus("error");
-      setErrorMessage("Please complete the captcha.");
-      return;
-    }
-
     setStatus("loading");
     setErrorMessage("");
 
     try {
-      // Verify captcha
-      const verifyRes = await fetch("/api/verify-captcha", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-      const { success } = await verifyRes.json();
-
-      if (!success) {
-        setStatus("error");
-        setErrorMessage("Captcha verification failed. Please try again.");
-        window.capycap?.reset(captchaRef.current || undefined);
-        return;
-      }
-
       // Use email as document ID to prevent duplicates (no read permission needed)
       const emailDocRef = doc(db, "interest_emails", email);
       await setDoc(emailDocRef, {
@@ -116,13 +33,11 @@ export default function InterestModal({ isOpen, onClose }: InterestModalProps) {
 
       setEmail("");
       setStatus("idle");
-      window.capycap?.reset(captchaRef.current || undefined);
       onClose();
     } catch (error) {
       console.error("Error adding email:", error);
       setStatus("error");
       setErrorMessage("Something went wrong. Please try again.");
-      window.capycap?.reset(captchaRef.current || undefined);
     }
   };
 
@@ -177,12 +92,6 @@ export default function InterestModal({ isOpen, onClose }: InterestModalProps) {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:outline-none focus:border-white/40 transition-colors"
-                />
-
-                <div
-                  ref={captchaRef}
-                  className="capycap-captcha"
-                  data-sitekey={process.env.NEXT_PUBLIC_CAPYCAP_SITEKEY}
                 />
 
                 <button
